@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>heima-leadnews-app-gateway</module>
+        <module>heima-leadnews-wemedia-gateway</module>
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -53,6 +54,15 @@
                 <version>1.1.1</version>
             </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
     </dependencies>
 
 

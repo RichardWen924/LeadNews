@@ -10,10 +10,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="heima-file-starter" />
         <module name="freemarker-demo" />
         <module name="minio-demo" />
+        <module name="heima-leadnews-wemedia-gateway" />
         <module name="heima-leadnews-utils" />
+        <module name="heima-leadnews-wemedia" />
         <module name="heima-leadnews-feign-api" />
         <module name="heima-leadnews-user" />
         <module name="heima-leadnews-app-gateway" />
@@ -23,7 +24,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="heima-file-starter" target="1.8" />
       <module name="heima-leadnews-apis" target="1.8" />
+      <module name="heima-leadnews-basic" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -43,6 +46,8 @@
       <module name="heima-leadnews-test" options="-parameters" />
       <module name="heima-leadnews-user" options="-parameters" />
       <module name="heima-leadnews-utils" options="-parameters" />
+      <module name="heima-leadnews-wemedia" options="-parameters" />
+      <module name="heima-leadnews-wemedia-gateway" options="-parameters" />
       <module name="minio-demo" options="-parameters" />
     </option>
   </component>
