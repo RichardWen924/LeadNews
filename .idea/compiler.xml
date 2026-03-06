@@ -11,6 +11,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="freemarker-demo" />
+        <module name="heima-file-starter" />
         <module name="minio-demo" />
         <module name="heima-leadnews-wemedia-gateway" />
         <module name="heima-leadnews-utils" />
@@ -24,9 +25,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="heima-file-starter" target="1.8" />
       <module name="heima-leadnews-apis" target="1.8" />
-      <module name="heima-leadnews-basic" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
