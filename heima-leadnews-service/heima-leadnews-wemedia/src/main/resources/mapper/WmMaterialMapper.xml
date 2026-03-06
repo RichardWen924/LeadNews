@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heima.wemedia.mapper.WmMaterialMapper">
+
+    <resultMap id="BaseResultMap" type="com.heima.model.wemedia.pojos.WmMaterial">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="url" property="url"/>
+        <result column="type" property="type"/>
+        <result column="is_collection" property="isCollection"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, url, type, is_collection, created_time
+    </sql>
+
+    <!-- 根据用户ID查询素材列表 -->
+    <select id="findByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from wm_material
+        where user_id = #{userId}
+        order by created_time desc
+    </select>
+
+    <!-- 根据用户ID和收藏状态查询素材列表 -->
+    <select id="findByUserIdAndCollection" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from wm_material
+        where user_id = #{userId}
+        and is_collection = #{isCollection}
+        order by created_time desc
+    </select>
+
+    <!-- 根据ID列表批量查询素材 -->
+    <select id="findByIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from wm_material
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 统计用户素材数量 -->
+    <select id="countByUserId" resultType="int">
+        select count(*)
+        from wm_material
+        where user_id = #{userId}
+    </select>
+
+</mapper>

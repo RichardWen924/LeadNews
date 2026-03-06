@@ -27,4 +27,23 @@ public class WmMaterialController {
             return wmMaterialService.findList(dto);
         }
 
+
+
+    //删除接口
+    @GetMapping("/del_picture/{id}")
+    public ResponseResult delPicture(@PathVariable("id") Integer id) {
+        return wmMaterialService.delPicture(id);
+    }
+
+    //收藏接口
+    @GetMapping("/collect/{id}")
+    public ResponseResult collect(@PathVariable("id") Integer id) {
+        return wmMaterialService.collectOrCancel(id);
+    }
+
+    //取消收藏接口
+    @GetMapping("/cancel_collect/{id}")
+    public ResponseResult cancelCollect(@PathVariable("id") Integer id) {
+        return wmMaterialService.collectOrCancel(id);
+    }
 }

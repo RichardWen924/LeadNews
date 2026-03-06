@@ -2,6 +2,7 @@ package com.heima.wemedia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.file.service.FileStorageService;
@@ -10,8 +11,10 @@ import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.dtos.WmMaterialDto;
 import com.heima.model.wemedia.pojos.WmMaterial;
+import com.heima.model.wemedia.pojos.WmNewsMaterial;
 import com.heima.utils.thread.WmThreadLocalUtils;
 import com.heima.wemedia.mapper.WmMaterialMapper;
+import com.heima.wemedia.mapper.WmNewsMaterialMapper;
 import com.heima.wemedia.service.WmMaterialService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
-
 
 @Slf4j
 @Service
@@ -32,44 +35,50 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private WmMaterialMapper wmMaterialMapper;
+
+    @Autowired
+    private WmNewsMaterialMapper wmNewsMaterialMapper;
 
     @Override
     public ResponseResult uploadPicture(MultipartFile multipartFile) {
-        //1.检查参数
-        if(multipartFile == null || multipartFile.getSize() == 0){
+        // 1.检查参数
+        if (multipartFile == null || multipartFile.getSize() == 0) {
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
         }
 
-        //2.上传图片到minIO中
+        // 2.上传图片到minIO中
         String fileName = UUID.randomUUID().toString().replace("-", "");
-        //aa.jpg
+        // aa.jpg
         String originalFilename = multipartFile.getOriginalFilename();
         String postfix = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileId = null;
         try {
             fileId = fileStorageService.uploadImgFile("", fileName + postfix, multipartFile.getInputStream());
-            log.info("上传图片到MinIO中，fileId:{}",fileId);
+            log.info("上传图片到MinIO中，fileId:{}", fileId);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("WmMaterialServiceImpl-上传文件失败");
         }
 
-        //3.保存到数据库中
+        // 3.保存到数据库中
         WmMaterial wmMaterial = new WmMaterial();
         wmMaterial.setUserId(WmThreadLocalUtils.getUser().getId());
         wmMaterial.setUrl(fileId);
-        wmMaterial.setIsCollection((short)0);
-        wmMaterial.setType((short)0);
+        wmMaterial.setIsCollection((short) 0);
+        wmMaterial.setType((short) 0);
         wmMaterial.setCreatedTime(new Date());
         save(wmMaterial);
 
-        //4.返回结果
+        // 4.返回结果
 
         return ResponseResult.okResult(wmMaterial);
     }
 
     /**
      * 素材列表查询
+     * 
      * @param dto
      * @return
      */
@@ -77,27 +86,87 @@ public class WmMaterialServiceImpl extends ServiceImpl<WmMaterialMapper, WmMater
     public ResponseResult findList(WmMaterialDto dto) {
         //
         dto.checkParam();
-        //2.分页查询
-        IPage page = new Page(dto.getPage(),dto.getSize());
+        // 2.分页查询
+        IPage page = new Page(dto.getPage(), dto.getSize());
         LambdaQueryWrapper<WmMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        //是否收藏
-        if(dto.getIsCollection() != null && dto.getIsCollection() == 1){
-            lambdaQueryWrapper.eq(WmMaterial::getIsCollection,dto.getIsCollection());
+        // 是否收藏
+        if (dto.getIsCollection() != null && dto.getIsCollection() == 1) {
+            lambdaQueryWrapper.eq(WmMaterial::getIsCollection, dto.getIsCollection());
         }
 
-        //按照用户查询
-        lambdaQueryWrapper.eq(WmMaterial::getUserId,WmThreadLocalUtils.getUser().getId());
+        // 按照用户查询
+        lambdaQueryWrapper.eq(WmMaterial::getUserId, WmThreadLocalUtils.getUser().getId());
 
-        //按照时间倒序
+        // 按照时间倒序
         lambdaQueryWrapper.orderByDesc(WmMaterial::getCreatedTime);
 
+        page = page(page, lambdaQueryWrapper);
 
-        page = page(page,lambdaQueryWrapper);
-
-        //3.结果返回
-        ResponseResult responseResult = new PageResponseResult(dto.getPage(),dto.getSize(),(int)page.getTotal());
+        // 3.结果返回
+        ResponseResult responseResult = new PageResponseResult(dto.getPage(), dto.getSize(), (int) page.getTotal());
         responseResult.setData(page.getRecords());
         return responseResult;
     }
 
+    /**
+     * 素材图片删除
+     * 
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult delPicture(Integer id) {
+        // 参数校验
+        if (id == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        // 判断素材是否存在
+        WmMaterial wmMaterial = wmMaterialMapper.selectById(id);
+        if (wmMaterial == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.AP_USER_DATA_NOT_EXIST);
+        }
+
+        // 判断该素材是否被引用，如果是，则返回删除失败
+        List<WmNewsMaterial> wmNewsMaterials = wmNewsMaterialMapper.selectList(Wrappers.<WmNewsMaterial>lambdaQuery()
+                .eq(WmNewsMaterial::getMaterialId, id));
+        if (wmNewsMaterials != null && wmNewsMaterials.size() != 0) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID, "文件删除失败");
+        }
+
+        // 成功删除 同时删除minio中的文件
+        fileStorageService.delete(wmMaterial.getUrl());
+        removeById(id);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    /**
+     * 收藏或取消收藏
+     * 
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult collectOrCancel(Integer id) {
+        if (id == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_INVALID);
+        }
+
+        WmMaterial wmMaterial = wmMaterialMapper.selectById(id);
+        if (wmMaterial == null) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+
+        if (wmMaterial.getIsCollection() == (short) 1) {
+            // 等于1，说明已经收藏，则取消收藏
+            wmMaterial.setIsCollection((short) 0);
+            updateById(wmMaterial);
+            return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+        }
+
+        // 走到这里说明wmMaterial 不为空 且 idCollection == 0
+        wmMaterial.setIsCollection((short) 1);
+        updateById(wmMaterial);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
 }
