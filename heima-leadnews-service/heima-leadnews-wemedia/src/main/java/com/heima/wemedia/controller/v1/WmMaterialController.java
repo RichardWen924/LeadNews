@@ -4,7 +4,7 @@ package com.heima.wemedia.controller.v1;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.wemedia.dtos.WmMaterialDto;
 import com.heima.wemedia.service.WmMaterialService;
-import com.sun.org.apache.xpath.internal.operations.Mult;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +24,7 @@ public class WmMaterialController {
     }
     @PostMapping("/list")
     public ResponseResult list(@RequestBody WmMaterialDto dto) {
-            return null;
+            return wmMaterialService.findList(dto);
         }
 
 }
