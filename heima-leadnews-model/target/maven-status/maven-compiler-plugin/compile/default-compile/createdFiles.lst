@@ -10,5 +10,6 @@ com/heima/model/common/enums/AppHttpCodeEnum.class
 com/heima/model/article/pojos/ApArticleConfig.class
 com/heima/model/common/dtos/ResponseResult.class
 com/heima/model/user/dtos/LoginDto.class
+com/heima/model/wemedia/pojos/WmChannel.class
 com/heima/model/common/dtos/PageResponseResult.class
 com/heima/model/article/pojos/ApArticle.class
