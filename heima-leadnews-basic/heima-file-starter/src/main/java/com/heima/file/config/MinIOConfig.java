@@ -16,13 +16,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({ MinIOConfigProperties.class })
 // 当引入FileStorageService接口时
 @ConditionalOnClass(FileStorageService.class)
-@ConditionalOnProperty(prefix = "minio", name = "endpoint")
 public class MinIOConfig {
 
     @Autowired
     private MinIOConfigProperties minIOConfigProperties;
 
     @Bean
+    @ConditionalOnProperty(prefix = "minio", name = "endpoint")
     public MinioClient buildMinioClient() {
         return MinioClient
                 .builder()

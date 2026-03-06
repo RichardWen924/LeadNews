@@ -20,7 +20,7 @@ import java.util.Date;
 @Slf4j
 public class MinIOFileStorageService implements FileStorageService {
 
-    @Autowired
+    @Autowired(required = false)
     private MinioClient minioClient;
 
     @Autowired
@@ -55,6 +55,11 @@ public class MinIOFileStorageService implements FileStorageService {
      */
     @Override
     public String uploadImgFile(String prefix, String filename, InputStream inputStream) {
+        if (minioClient == null) {
+            log.error("MinioClient is not initialized. Please check minio.endpoint configuration.");
+            throw new RuntimeException("MinIO客户端未初始化，请检查配置");
+        }
+        log.info("Starting MinIO upload. Current endpoint: {}", minIOConfigProperties.getEndpoint());
         String filePath = builderFilePath(prefix, filename);
         try {
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
@@ -69,8 +74,10 @@ public class MinIOFileStorageService implements FileStorageService {
             urlPath.append(filePath);
             return urlPath.toString();
         } catch (Exception ex) {
-            log.error("minio put file error.", ex);
-            throw new RuntimeException("上传文件失败");
+            log.error("minio put file error. endpoint:{}, bucket:{}, filePath:{}, cause:{}",
+                    minIOConfigProperties.getEndpoint(), minIOConfigProperties.getBucket(), filePath, ex.getMessage(),
+                    ex);
+            throw new RuntimeException("上传文件失败: " + ex.getMessage());
         }
     }
 
