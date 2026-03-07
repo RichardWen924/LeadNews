@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,8 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
      * @param id 自媒体文章id
      */
     @Override
+    @Async  //标明当前方法是一个异步方法
+
     public void autoScanWmNews(Integer id) {
         //1.查询自媒体文章
         WmNews wmNews = wmNewsMapper.selectById(id);
@@ -68,7 +71,8 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             updateWmNews(wmNews,(short) 9,"审核成功");
 
         }
-        System.out.println("error");
+
+
     }
 
     @Autowired
@@ -211,7 +215,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 //            e.printStackTrace();
 //        }
 
-        flag=false;
+        flag=true;
         updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
         return flag;
 

@@ -21,6 +21,7 @@ import com.heima.utils.thread.WmThreadLocalUtils;
 import com.heima.wemedia.mapper.WmMaterialMapper;
 import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
+import com.heima.wemedia.service.WmNewsAutoScanService;
 import com.heima.wemedia.service.WmNewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
     @Autowired
     private WmNewsMapper wmNewsMapper;
+    @Autowired
+    private WmNewsAutoScanService wmNewsAutoScanService;
 
     @Override
     public ResponseResult findAll(WmNewsPageReqDto dto) {
@@ -122,14 +125,15 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             wmNews.setImages(imageStr);
         }
         // 如果当前封面类型为自动 -1
-        if (dto.getType().equals(WemediaConstants.WM_NEWS_TYPE_AUTO)) {
-            wmNews.setType(null);
+        if (WemediaConstants.WM_NEWS_TYPE_AUTO.equals(dto.getType())) {
+            // 设置默认值为无图(0)，避免 mybatis-plus 将 null 忽略导致插入时 MySQL 报“字段 type 无默认值”错误
+            wmNews.setType(WemediaConstants.WM_NEWS_NONE_IMAGE);
         }
 
         saveOrUpdateWmNews(wmNews);
 
         // 2.判断是否为草稿 如果为草稿结束当前方法
-        if (dto.getStatus().equals(WmNews.Status.NORMAL.getCode())) {
+        if (Short.valueOf(WmNews.Status.NORMAL.getCode()).equals(dto.getStatus())) {
             return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
         }
 
@@ -141,6 +145,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         // 4.不是草稿，保存文章封面图片与素材的关系，如果当前布局是自动，需要匹配封面图片
         saveRelativeInfoForCover(dto, wmNews, materials);
 
+        // 审核文章
+        wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
 
     }
@@ -163,7 +169,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         List<String> images = dto.getImages();
 
         // 如果当前封面类型为自动，则设置封面类型的数据
-        if (dto.getType().equals(WemediaConstants.WM_NEWS_TYPE_AUTO)) {
+        if (WemediaConstants.WM_NEWS_TYPE_AUTO.equals(dto.getType())) {
             // 多图
             if (materials.size() >= 3) {
                 wmNews.setType(WemediaConstants.WM_NEWS_MANY_IMAGE);
