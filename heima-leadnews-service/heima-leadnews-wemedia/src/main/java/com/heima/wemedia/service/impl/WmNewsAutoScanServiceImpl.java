@@ -68,6 +68,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             updateWmNews(wmNews,(short) 9,"审核成功");
 
         }
+        System.out.println("error");
     }
 
     @Autowired
@@ -148,26 +149,28 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
 
 
         //审核图片
-        try {
-            Map map = greenImageScan.imageScan(imageList);
-            if(map != null){
-                //审核失败
-                if(map.get("suggestion").equals("block")){
-                    flag = false;
-                    updateWmNews(wmNews, (short) 2, "当前文章中存在违规内容");
-                }
-
-                //不确定信息  需要人工审核
-                if(map.get("suggestion").equals("review")){
-                    flag = false;
-                    updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
-                }
-            }
-
-        } catch (Exception e) {
-            flag = false;
-            e.printStackTrace();
-        }
+//        try {
+//            Map map = greenImageScan.imageScan(imageList);
+//            if(map != null){
+//                //审核失败
+//                if(map.get("suggestion").equals("block")){
+//                    flag = false;
+//                    updateWmNews(wmNews, (short) 2, "当前文章中存在违规内容");
+//                }
+//
+//                //不确定信息  需要人工审核
+//                if(map.get("suggestion").equals("review")){
+//                    flag = false;
+//                    updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            flag = false;
+//            e.printStackTrace();
+//        }
+        flag=true;
+        updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
         return flag;
     }
 
@@ -188,26 +191,28 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             return flag;
         }
 
-        try {
-            Map map = greenTextScan.greeTextScan((wmNews.getTitle()+"-"+content));
-            if(map != null){
-                //审核失败
-                if(map.get("suggestion").equals("block")){
-                    flag = false;
-                    updateWmNews(wmNews, (short) 2, "当前文章中存在违规内容");
-                }
+//        try {
+//            Map map = greenTextScan.greeTextScan((wmNews.getTitle()+"-"+content));
+//            if(map != null){
+//                //审核失败
+//                if(map.get("suggestion").equals("block")){
+//                    flag = false;
+//                    updateWmNews(wmNews, (short) 2, "当前文章中存在违规内容");
+//                }
+//
+//                //不确定信息  需要人工审核
+//                if(map.get("suggestion").equals("review")){
+//                    flag = false;
+//                    updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
+//                }
+//            }
+//        } catch (Exception e) {
+//            flag = false;
+//            e.printStackTrace();
+//        }
 
-                //不确定信息  需要人工审核
-                if(map.get("suggestion").equals("review")){
-                    flag = false;
-                    updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
-                }
-            }
-        } catch (Exception e) {
-            flag = false;
-            e.printStackTrace();
-        }
-
+        flag=false;
+        updateWmNews(wmNews, (short) 3, "当前文章中存在不确定内容");
         return flag;
 
     }
