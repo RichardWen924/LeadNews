@@ -14,11 +14,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.util.BeanUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -217,5 +219,24 @@ return flag;
         return task;
     }
 
+    @Scheduled(cron="0 */1 * * * ?")
+    public void refresh(){
+        System.out.println(System.currentTimeMillis()/1000+"执行了定时任务");
+
+        //获取所有未来数据集合的key值
+        Set<String> futureKeys = cacheService.scan(ScheduleConstants.FUTURE + "*");
+        for (String futureKey : futureKeys) {
+            String topicKey = ScheduleConstants.TOPIC + futureKey.split(ScheduleConstants.FUTURE)[1];
+            //获取该组key下当前所需要消费的任务数据
+            Set<String> tasks = cacheService.zRangeByScore(futureKey, 0, System.currentTimeMillis());
+            if(!tasks.isEmpty()){
+                //将这些任务加入到消费者队列
+                cacheService.refreshWithPipeline(futureKey,topicKey,tasks);
+                System.out.println("成功的将" + futureKey + "下的当前需要执行的任务数据刷新到" + topicKey + "下");
+            }
+        }
+
+
+    }
 
 }
