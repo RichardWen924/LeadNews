@@ -26,7 +26,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-//@Transactional
+@Transactional
 public class ArticleFreemarkerServiceImpl implements ArticleFreemarkerService {
 
     @Autowired
