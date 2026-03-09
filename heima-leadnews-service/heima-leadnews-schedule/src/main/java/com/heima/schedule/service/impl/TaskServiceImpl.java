@@ -63,11 +63,60 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public boolean cancelTask(long taskId) {
-        return false;
+        boolean flag=false;
+
+        //删除任务更新日志
+        Task task=updateDb(taskId,ScheduleConstants.CANCELLED);
+
+        //删除在redis中的数据
+        if(task!=null){
+            removeTaskFromCache(task);
+            flag=true;
+        }
+//TODO 修改了false和更行状态的值
+        return flag;
+    }
 
 
+    /**
+     * 删除redis中的任务数据
+     * @param task
+     */
+    private void removeTaskFromCache(Task task) {
 
+        String key = task.getTaskType()+"_"+task.getPriority();
 
+        if(task.getExecuteTime()<=System.currentTimeMillis()){
+            cacheService.lRemove(ScheduleConstants.TOPIC+key,0,JSON.toJSONString(task));
+        }else {
+            cacheService.zRemove(ScheduleConstants.FUTURE+key, JSON.toJSONString(task));
+        }
+    }
+
+    /**
+     * 删除任务，更新任务日志状态
+     * @param taskId
+     * @param status
+     * @return
+     */
+    private Task updateDb(long taskId, int status) {
+        Task task = null;
+        try {
+            //删除任务
+            taskinfoMapper.deleteById(taskId);
+
+            TaskinfoLogs taskinfoLogs = taskinfoLogsMapper.selectById(taskId);
+            taskinfoLogs.setStatus(status);
+            taskinfoLogsMapper.updateById(taskinfoLogs);
+
+            task = new Task();
+            BeanUtils.copyProperties(taskinfoLogs,task);
+            task.setExecuteTime(taskinfoLogs.getExecuteTime().getTime());
+        }catch (Exception e){
+            log.error("task cancel exception taskid={}",taskId);
+        }
+
+        return task;
 
     }
 
