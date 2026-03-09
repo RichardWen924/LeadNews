@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>heima-leadnews-service</artifactId>
+        <artifactId>heima-leadnews-test</artifactId>
         <groupId>com.heima</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>heima-leadnews-schedule</artifactId>
+    <artifactId>kafka-demo</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -17,25 +17,28 @@
     </properties>
 
     <dependencies>
-        <!-- Web：提供内嵌 Tomcat，对外暴露 HTTP 接口（ScheduleClient Controller 必须） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- Redis：CacheService 所依赖的 StringRedisTemplate 需要此依赖 -->
+        <!-- kafkfa -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka-clients</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!-- MyBatis-Plus：任务表的 Mapper 操作需要 -->
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
         </dependency>
-        <!-- MySQL 驱动 -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
         </dependency>
     </dependencies>
 

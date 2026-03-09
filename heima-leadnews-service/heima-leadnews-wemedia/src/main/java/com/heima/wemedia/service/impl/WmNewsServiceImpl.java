@@ -150,7 +150,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         //审核文章
                 wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
       //  wmNewsTaskService.addNewsToTask(wmNews.getId(),wmNews.getPublishTime());
-
+//TODO 联调功能有问题
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
 
     }
