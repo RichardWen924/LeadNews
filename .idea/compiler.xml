@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
     <excludeFromCompile>
       <directory url="file://$PROJECT_DIR$/heima-leadnews-test/freemarker-demo/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/heima-leadnews-service/heima-leadnews-admin/src/main/resources/archetype-resources" includeSubdirectories="true" />
     </excludeFromCompile>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
@@ -19,6 +20,8 @@
         <module name="heima-leadnews-user" />
         <module name="heima-leadnews-article" />
         <module name="kafka-demo" />
+        <module name="heima-leadnews-admin" />
+        <module name="heima-leadnews-admin-gateway" />
         <module name="es-init" />
         <module name="heima-leadnews-schedule" />
         <module name="heima-leadnews-utils" />
@@ -31,6 +34,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="archetype-resources" target="1.8" />
+      <module name="heima-leadnews-admin (1) (com.heima.leadnews)" target="1.8" />
       <module name="heima-leadnews-apis" target="1.8" />
       <module name="kafka" target="1.8" />
     </bytecodeTargetLevel>
@@ -41,6 +46,9 @@
       <module name="freemarker-demo" options="-parameters" />
       <module name="heima-file-starter" options="-parameters" />
       <module name="heima-leadnews" options="-parameters" />
+      <module name="heima-leadnews-admin" options="-parameters" />
+      <module name="heima-leadnews-admin (1) (com.heima.leadnews)" options="-parameters" />
+      <module name="heima-leadnews-admin-gateway" options="-parameters" />
       <module name="heima-leadnews-apis" options="-parameters" />
       <module name="heima-leadnews-app-gateway" options="-parameters" />
       <module name="heima-leadnews-article" options="-parameters" />
