@@ -58,11 +58,11 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
         QueryStringQueryBuilder queryStringQueryBuilder = QueryBuilders.queryStringQuery(dto.getSearchWords()).field("title").field("content").defaultOperator(Operator.OR);
-
+        boolQueryBuilder.must(queryStringQueryBuilder);
         //查询小于mindate的数据
 
         RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("publishTime").lt(dto.getMinBehotTime().getTime());
-
+        boolQueryBuilder.filter(rangeQueryBuilder);
         //分页查询
         searchSourceBuilder.from(0);
         searchSourceBuilder.size(dto.getPageSize());
