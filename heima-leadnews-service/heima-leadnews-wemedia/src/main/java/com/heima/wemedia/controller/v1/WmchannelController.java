@@ -52,4 +52,15 @@ public class WmchannelController {
         return wmChannelService.updateChannel(channel);
     }
 
+    /**
+     * 删除频道
+     * @param id
+     * @return
+     */
+    @GetMapping("/del/{id}")
+    public ResponseResult del(@PathVariable("id") Integer id){
+        return wmChannelService.deleteChannel(id);
+    }
+
+
 }

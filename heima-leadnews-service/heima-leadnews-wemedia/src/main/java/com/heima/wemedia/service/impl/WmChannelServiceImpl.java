@@ -26,6 +26,7 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
 
     /**
      * 查询所有频道
+     *
      * @return
      */
     @Override
@@ -43,16 +44,16 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
     @Override
     public ResponseResult findListWithPage(ChannelDto dto) {
         // 1.参数检查
-        if(dto == null){
-            return ResponseResult.errorResult(400,"参数错误");
+        if (dto == null) {
+            return ResponseResult.errorResult(400, "参数错误");
         }
         // 2 分页查询
-        IPage pageCheck=new Page(dto.getPage(),dto.getSize());
+        IPage pageCheck = new Page(dto.getPage(), dto.getSize());
         // 3 按照不同需求查询
         LambdaQueryWrapper<WmChannel> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //3.1 关键字模糊匹配
-        if(StringUtils.isNotBlank(dto.getName())){
-            lambdaQueryWrapper.like(WmChannel::getName,dto.getName());
+        if (StringUtils.isNotBlank(dto.getName())) {
+            lambdaQueryWrapper.like(WmChannel::getName, dto.getName());
         }
         //3.2 排序
         lambdaQueryWrapper.orderByDesc(WmChannel::getCreatedTime);
@@ -66,21 +67,34 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
 
     /**
      * 更新频道
+     *
      * @param channel
      * @return
      */
     @Override
     public ResponseResult updateChannel(AdChannel channel) {
         // 1.参数检查
-        if(channel == null){
-            return ResponseResult.errorResult(400,"参数错误");
+        if (channel == null) {
+            return ResponseResult.errorResult(400, "参数错误");
         }
         // 2.更新
         WmChannel wmChannel = new WmChannel();
-        BeanUtils.copyProperties(channel,wmChannel);
+        BeanUtils.copyProperties(channel, wmChannel);
         updateById(wmChannel);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
+
+    @Override
+    public ResponseResult deleteChannel(Integer id) {
+        // 1.参数检查
+        if (id == null) {
+            return ResponseResult.errorResult(400, "参数错误");
+        }
+        // 2.删除
+        removeById(id);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+
+    }
 }
 
