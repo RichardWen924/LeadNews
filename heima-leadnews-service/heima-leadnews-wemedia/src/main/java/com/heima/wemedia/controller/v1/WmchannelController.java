@@ -46,4 +46,10 @@ public class WmchannelController {
         return wmChannelService.findListWithPage(dto);
     }
 
+//更新频道
+    @PostMapping("/update")
+    public ResponseResult update(@RequestBody AdChannel channel){
+        return wmChannelService.updateChannel(channel);
+    }
+
 }

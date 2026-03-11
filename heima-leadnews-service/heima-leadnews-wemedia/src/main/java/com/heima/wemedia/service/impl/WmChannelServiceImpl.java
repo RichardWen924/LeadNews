@@ -6,12 +6,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.model.admin.dtos.ChannelDto;
+import com.heima.model.admin.pojos.AdChannel;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.pojos.WmChannel;
 import com.heima.wemedia.mapper.WmChannelMapper;
 import com.heima.wemedia.service.WmChannelService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,5 +62,25 @@ public class WmChannelServiceImpl extends ServiceImpl<WmChannelMapper, WmChannel
         responseResult.setData(pageCheck.getRecords());
         return responseResult;
     }
+
+
+    /**
+     * 更新频道
+     * @param channel
+     * @return
+     */
+    @Override
+    public ResponseResult updateChannel(AdChannel channel) {
+        // 1.参数检查
+        if(channel == null){
+            return ResponseResult.errorResult(400,"参数错误");
+        }
+        // 2.更新
+        WmChannel wmChannel = new WmChannel();
+        BeanUtils.copyProperties(channel,wmChannel);
+        updateById(wmChannel);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
 }
 
