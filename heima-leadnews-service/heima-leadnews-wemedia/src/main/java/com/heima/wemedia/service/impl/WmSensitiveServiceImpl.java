@@ -6,12 +6,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.heima.model.admin.dtos.SensitiveDto;
+import com.heima.model.admin.pojos.AdSensitive;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.pojos.WmSensitive;
 import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.service.WmSensitiveService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,4 +44,43 @@ public class WmSensitiveServiceImpl extends ServiceImpl<WmSensitiveMapper, WmSen
         responseResult.setData(pageCheck.getRecords());
         return responseResult;
     }
+
+    /**
+     * 敏感词新增
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult save(AdSensitive dto) {
+        if(dto == null){
+            return ResponseResult.errorResult(400,"参数错误");
+        }
+        WmSensitive wmSensitive = new WmSensitive();
+        BeanUtils.copyProperties(dto,wmSensitive);
+        save(wmSensitive);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public ResponseResult update(AdSensitive dto) {
+        if(dto == null){
+            return ResponseResult.errorResult(400,"参数错误");
+        }
+        WmSensitive wmSensitive = new WmSensitive();
+        BeanUtils.copyProperties(dto,wmSensitive);
+        updateById(wmSensitive);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public ResponseResult delete(Integer id) {
+        if(id == null){
+            return ResponseResult.errorResult(400,"参数错误");
+        }
+        removeById(id);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+
+
 }
