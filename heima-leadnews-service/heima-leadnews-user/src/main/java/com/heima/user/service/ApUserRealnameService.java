@@ -8,4 +8,8 @@ import com.heima.model.user.pojos.ApUserRealname;
 
 public interface ApUserRealnameService extends IService<ApUserRealname> {
     ResponseResult findlist(AuthDto dto);
+
+    ResponseResult authFail(AuthDto dto);
+
+    ResponseResult authPass(AuthDto dto);
 }

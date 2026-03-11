@@ -24,4 +24,22 @@ public class ApUserVerifyController {
         return apUserRealnameService.findlist(dto);
     }
 
+    /**
+     * 审核失败
+     */
+    @PostMapping("/authFail")
+    public ResponseResult authFail(@RequestBody AuthDto dto) {
+        return apUserRealnameService.authFail(dto);
+    }
+
+    /**
+     * 审核通过
+     */
+    @PostMapping("/authPass")
+    public ResponseResult authPass(@RequestBody AuthDto dto) {
+        return apUserRealnameService.authPass(dto);
+    }
+
+
+
 }

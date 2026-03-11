@@ -1,5 +1,6 @@
 package com.heima.user.service.impl;
 
+import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,12 +9,16 @@ import com.heima.model.admin.dtos.AuthDto;
 
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.user.pojos.ApUserRealname;
 import com.heima.user.mapper.ApUserRealnameMapper;
 import com.heima.user.service.ApUserRealnameService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 @Service
 @Transactional
@@ -40,4 +45,42 @@ public class ApUserRealnameServiceImpl extends ServiceImpl<ApUserRealnameMapper,
         responseResult.setData(pageCheck.getRecords());
         return responseResult;
     }
+
+
+    /**
+     * 审核失败功能
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult authFail(AuthDto dto) {
+        if(dto==null || dto.getId()==null){
+            return ResponseResult.errorResult(400,"参数错误");
+        }
+        ApUserRealname apUserRealname = new ApUserRealname();
+        BeanUtils.copyProperties(dto, apUserRealname);
+        apUserRealname.setStatus((short) 2);
+        if(StringUtils.isBlank(dto.getMsg())){
+            apUserRealname.setReason("审核失败");
+        }else{
+            apUserRealname.setReason(dto.getMsg());
+        }
+        apUserRealname.setUpdatedTime(new Date());
+        updateById(apUserRealname);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public ResponseResult authPass(AuthDto dto) {
+        if(dto==null || dto.getId()==null){
+            return ResponseResult.errorResult(400,"参数错误");
+        }
+        ApUserRealname apUserRealname = new ApUserRealname();
+        BeanUtils.copyProperties(dto, apUserRealname);
+        apUserRealname.setStatus((short) 9);
+        apUserRealname.setUpdatedTime(new Date());
+        updateById(apUserRealname);
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+    }
+
 }
