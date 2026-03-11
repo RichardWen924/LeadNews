@@ -21,4 +21,6 @@ public interface ApArticleService extends IService<ApArticle> {
 
 
     public ResponseResult saveArticle( ArticleDto dto);
+
+    ResponseResult loadArticleBehavior(com.heima.model.article.dtos.ArticleInfoDto dto);
 }

@@ -23,9 +23,21 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
+        // 放行OPTIONS请求，解决跨域预检问题
+        if (request.getMethod().name().equalsIgnoreCase("OPTIONS")) {
+            return chain.filter(exchange);
+        }
+
         // 2.判断是否是登录
-        if (request.getURI().getPath().contains("/login")) {
-            // 放行
+        if (request.getURI().getPath().contains("/login") || request.getURI().getPath().contains("/behavior/api/v1/")) {
+            // 特殊放行 /behavior 测试接口，同时模拟写入一个有效的 userId
+            if (request.getURI().getPath().contains("/behavior/api/v1/")) {
+                ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
+                    httpHeaders.add("userId", "1"); // 假设使用 ID 为 1 的测试用户
+                }).build();
+                return chain.filter(exchange.mutate().request(serverHttpRequest).build());
+            }
+            // 放行登录
             return chain.filter(exchange);
         }
 
@@ -54,16 +66,13 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
                 httpHeaders.add("userId", userId + "");
             }).build();
-//重置header
-            exchange.mutate().request(serverHttpRequest);
+            //重置header并传递给后续过滤器
+            return chain.filter(exchange.mutate().request(serverHttpRequest).build());
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
-
-        // 6.放行
-        return chain.filter(exchange);
     }
 
     /**
