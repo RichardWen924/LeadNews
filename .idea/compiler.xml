@@ -33,23 +33,17 @@
         <module name="heima-leadnews-model" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="archetype-resources" target="1.8" />
-      <module name="heima-leadnews-admin (1) (com.heima.leadnews)" target="1.8" />
-      <module name="heima-leadnews-apis" target="1.8" />
-      <module name="kafka" target="1.8" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="8" />
   </component>
   <component name="JavacSettings">
+    <option name="DEBUGGING_INFO" value="false" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="es-init" options="-parameters" />
       <module name="freemarker-demo" options="-parameters" />
       <module name="heima-file-starter" options="-parameters" />
       <module name="heima-leadnews" options="-parameters" />
       <module name="heima-leadnews-admin" options="-parameters" />
-      <module name="heima-leadnews-admin (1) (com.heima.leadnews)" options="-parameters" />
       <module name="heima-leadnews-admin-gateway" options="-parameters" />
-      <module name="heima-leadnews-apis" options="-parameters" />
       <module name="heima-leadnews-app-gateway" options="-parameters" />
       <module name="heima-leadnews-article" options="-parameters" />
       <module name="heima-leadnews-basic" options="-parameters" />
@@ -65,7 +59,6 @@
       <module name="heima-leadnews-utils" options="-parameters" />
       <module name="heima-leadnews-wemedia" options="-parameters" />
       <module name="heima-leadnews-wemedia-gateway" options="-parameters" />
-      <module name="kafka" options="-parameters" />
       <module name="kafka-demo" options="-parameters" />
       <module name="minio-demo" options="-parameters" />
       <module name="mongo-demo" options="-parameters" />

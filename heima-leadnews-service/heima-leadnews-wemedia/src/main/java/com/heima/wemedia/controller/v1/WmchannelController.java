@@ -1,5 +1,6 @@
 package com.heima.wemedia.controller.v1;
 
+import com.heima.model.admin.dtos.ChannelDto;
 import com.heima.model.admin.pojos.AdChannel;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.wemedia.pojos.WmChannel;
@@ -39,4 +40,10 @@ public class WmchannelController {
         }
         return ResponseResult.okResult(wmChannelService.save(wmChannel));
     }
+
+    @PostMapping("/list")
+    public ResponseResult findListWithPage(@RequestBody ChannelDto dto){
+        return wmChannelService.findListWithPage(dto);
+    }
+
 }
