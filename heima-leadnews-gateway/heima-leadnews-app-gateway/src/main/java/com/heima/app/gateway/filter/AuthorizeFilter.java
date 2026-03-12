@@ -60,13 +60,12 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
                 return response.setComplete();
             }
 
-            Object userId=claimsBody.get("id");
-
+            Object userId = claimsBody.get("id");
 
             ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
                 httpHeaders.add("userId", userId + "");
             }).build();
-            //重置header并传递给后续过滤器
+            // 重置header并传递给后续过滤器
             return chain.filter(exchange.mutate().request(serverHttpRequest).build());
         } catch (Exception e) {
             e.printStackTrace();
