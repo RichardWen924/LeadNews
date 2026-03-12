@@ -48,6 +48,6 @@ public class ApUnlikesBehaviorServiceImpl implements ApUnlikesBehaviorService {
             cacheService.hDelete(BehaviorConstants.UN_LIKE_BEHAVIOR + dto.getArticleId().toString(), user.getId().toString());
         }
 
-        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
+        return ResponseResult.okResult(null);
     }
 }
