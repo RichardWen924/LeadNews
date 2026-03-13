@@ -49,3 +49,10 @@ spring:
             - Path=/behavior/**
           filters:
             - StripPrefix= 1
+        #评论微服务
+        - id: comment
+          uri: lb://leadnews-comment
+          predicates:
+            - Path=/comment/**
+          filters:
+            - StripPrefix= 1
