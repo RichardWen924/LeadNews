@@ -66,9 +66,10 @@ public class CommentRepayServiceImpl implements CommentRepayService {
         }
 
         //4.保存回复
-        ApUser dbUser = null;
+        ApUser dbUser = null; // Initialize dbUser
+        // 2.检查用户状态
         ResponseResult userResult = userClient.findUserById(user.getId());
-        if (userResult.getCode().equals(0) && userResult.getData() != null) {
+        if (userResult.getCode().equals(AppHttpCodeEnum.SUCCESS.getCode()) && userResult.getData() != null) {
             dbUser = JSON.parseObject(JSON.toJSONString(userResult.getData()), ApUser.class);
         }
 
@@ -80,7 +81,7 @@ public class CommentRepayServiceImpl implements CommentRepayService {
         apCommentRepay.setCommentId(dto.getCommentId());
         apCommentRepay.setLikes(0);
 
-        mongoTemplate.save(apCommentRepay);
+        mongoTemplate.save(apCommentRepay, "ap_comment_repay");
 
         //5.更新评论的回复数量
         ApComment apComment = mongoTemplate.findById(dto.getCommentId(), ApComment.class, "ap_comment");
@@ -173,11 +174,16 @@ public class CommentRepayServiceImpl implements CommentRepayService {
         List<Map> resultList = new ArrayList<>();
         for (ApCommentRepay apCommentRepay : list) {
             Map map = JSON.parseObject(JSON.toJSONString(apCommentRepay), Map.class);
+            boolean liked = false;
             for (ApCommentLike apCommentLike : apCommentLikes) {
                 if (apCommentLike.getCommentId().equals(apCommentRepay.getId())) {
                     map.put("operation", 0);
+                    liked = true;
                     break;
                 }
+            }
+            if (!liked) {
+                map.put("operation", null);
             }
             resultList.add(map);
         }

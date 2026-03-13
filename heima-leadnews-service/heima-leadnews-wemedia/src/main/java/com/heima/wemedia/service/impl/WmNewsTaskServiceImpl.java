@@ -64,7 +64,7 @@ public class WmNewsTaskServiceImpl  implements WmNewsTaskService {
         log.info("文章审核---消费任务执行---begin---");
 
         ResponseResult responseResult = scheduleClient.poll(TaskTypeEnum.NEWS_SCAN_TIME.getTaskType(), TaskTypeEnum.NEWS_SCAN_TIME.getPriority());
-        if(responseResult.getCode().equals(200) && responseResult.getData() != null){
+        if(responseResult.getCode().equals(0) && responseResult.getData() != null){
             String json_str = JSON.toJSONString(responseResult.getData());
             Task task = JSON.parseObject(json_str, Task.class);
             byte[] parameters = task.getParameters();

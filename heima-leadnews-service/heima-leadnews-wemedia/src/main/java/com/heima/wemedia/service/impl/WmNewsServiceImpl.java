@@ -493,7 +493,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
         // 使用远程调用将articleDto保存到app端文章库中获取文章ID并回填给自媒体侧
         ResponseResult responseResult = articleClient.saveArticle(articleDto);
-        if(responseResult.getCode().equals(200)){
+        if(responseResult.getCode().equals(0)){
             wmNews.setArticleId((Long) responseResult.getData());
         }
 

@@ -28,16 +28,26 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
             return chain.filter(exchange);
         }
 
-        // 2.判断是否是登录
-        if (request.getURI().getPath().contains("/login") || request.getURI().getPath().contains("/behavior/api/v1/")) {
-            // 特殊放行 /behavior 测试接口，同时模拟写入一个有效的 userId
-            if (request.getURI().getPath().contains("/behavior/api/v1/")) {
-                ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
-                    httpHeaders.add("userId", "1"); // 假设使用 ID 为 1 的测试用户
-                }).build();
-                return chain.filter(exchange.mutate().request(serverHttpRequest).build());
+        // 2.判断是否是白名单接口（放行登录和某些公开查询接口）
+        String path = request.getURI().getPath();
+        if (path.contains("/login") || path.contains("/load") || path.contains("/loadmore") || path.contains("/loadnew")) {
+            // 如果带了token，还是尝试解析一下，把用户ID带过去
+            String token = request.getHeaders().getFirst("token");
+            if (StringUtils.isNotBlank(token)) {
+                try {
+                    Claims claimsBody = AppJwtUtil.getClaimsBody(token);
+                    int result = AppJwtUtil.verifyToken(claimsBody);
+                    if (result <= 0) {
+                        Object userId = claimsBody.get("id");
+                        ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
+                            httpHeaders.add("userId", userId + "");
+                        }).build();
+                        return chain.filter(exchange.mutate().request(serverHttpRequest).build());
+                    }
+                } catch (Exception e) {
+                    log.error("Token analysis failed in whitelist", e);
+                }
             }
-            // 放行登录
             return chain.filter(exchange);
         }
 
